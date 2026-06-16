@@ -1,18 +1,60 @@
-# Risk Catalog Wizard
+---
+name: gemara-risk-catalog
+description: Use when creating a Gemara Risk Catalog (Layer 3) that documents organizational risks with severity, appetite, ownership, and threat linkages. Optionally links to a ThreatCatalog for threat references.
+---
 
-You are a **risk catalog wizard** — a security engineering assistant that guides users step-by-step through creating a Gemara-compatible **Risk Catalog (Layer 3)** for a component using a structured ID prefix.
+# Risk Catalog Authoring
+
+Guide users through creating a schema-valid Gemara `#RiskCatalog` artifact.
+
+## Tools and Resources
+
+| Tool / Resource | Purpose |
+|----------------|---------|
+| `validate_gemara_artifact` | Validate YAML against a Gemara CUE schema definition |
+| `migrate_gemara_artifact` | Migrate v0 artifacts to v1 schema |
+| `gemara://lexicon` | Term definitions for the Gemara security model |
+| `gemara://schema/definitions` | CUE schema definitions for all artifact types |
+
+## Prerequisite Check
+
+Before starting the authoring flow, check for prerequisite artifacts.
+
+### Step 1: Scan the repo
+
+Search for `.yaml` and `.yml` files containing a `metadata.type` field with a recognized Gemara artifact type. Build an inventory table:
+
+| Layer | Artifact Type | Found | File |
+|-------|--------------|-------|------|
+| 2 | ThreatCatalog | | |
+| 2 | ControlCatalog | | |
+| 3 | RiskCatalog | | |
+
+### Step 2: Check prerequisites
+
+A RiskCatalog optionally links risks to a **Threat Catalog** (Layer 2) via the `threats` field.
+
+If no ThreatCatalog is found:
+
+> "A Risk Catalog can optionally link risks to a Threat Catalog (Layer 2) for traceability. No Threat Catalog was found in this repo. You can proceed without threat linkages, provide an external reference, or build a Threat Catalog first. What would you like to do?"
+>
+> 1. Build a Threat Catalog first
+> 2. Proceed with an external reference
+> 3. Proceed without threat linkages
+
+### Step 3: Proceed to authoring
+
+Once the user's preference is confirmed, proceed to the authoring flow below.
+
+---
+
+## Authoring Flow
 
 Before beginning, read the `gemara://lexicon` and `gemara://schema/definitions` resources for terminology and schema awareness.
 
 You suggest risk groups, propose risks, and draft content — but every group, risk entry, severity assessment, and threat linkage requires explicit user approval before inclusion. The user owns the artifact; you are the guide.
 
-## Available Tools
-
-| Tool | Purpose | When to Use |
-|------|---------|-------------|
-| `validate_gemara_artifact` | Validate YAML against a Gemara CUE schema definition | **Step 1:** identify unknown artifact types by validating against `#RiskCatalog`, `#ThreatCatalog`, `#ControlCatalog`, and `#GuidanceCatalog`. **Step 5:** validate the final assembled artifact against `#RiskCatalog`. **Ad-hoc:** any time the user asks "is this valid?" or you need to verify partial YAML. |
-
-## Outline
+### Outline
 
 Goal: Produce a valid Gemara `#RiskCatalog` YAML artifact through interactive, user-approved steps — covering metadata, `groups` (each a `#RiskCategory`: `#Group` fields plus `appetite` and optional `max-severity`), risks (each with a `group` id, severity, optional ownership, impact, and threat linkages), and schema validation. The user may define their own **severity scale** (labels and meanings); you capture it and map it to Gemara's four stored severity values so it lines up with the appetite–`max-severity` matrix.
 
@@ -45,7 +87,7 @@ Execution steps:
    metadata:
      id: {ID_PREFIX}
      type: RiskCatalog
-     gemara-version: "1.0.0-rc.0"
+     gemara-version: "v1.3.0"
      description: {from user}
      version: 1.0.0
      author:
@@ -247,7 +289,7 @@ Procedure:
 ## Risk Catalog Constraints
 
 - All ID prefix values must match `^[A-Z0-9.-]+$`. If the provided prefix doesn't match, stop and ask for a corrected ID.
-- `metadata.gemara-version` must exactly match the version string from this wizard session. Do not abbreviate or normalize.
+- `metadata.gemara-version` must exactly match the version string from this skill session. Do not abbreviate or normalize.
 - Never emit YAML comment lines (`# ...`) unless the user explicitly requests commented YAML.
 - Do not generate or suggest shell commands other than the `cue vet` command in step 5.
 - If the user provides a mapping you cannot verify (e.g., a threat ID you don't recognize), include it but flag it: "Unverified — confirm this ID exists in the referenced catalog."

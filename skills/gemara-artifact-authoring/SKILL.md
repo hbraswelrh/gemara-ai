@@ -1,11 +1,11 @@
 ---
 name: gemara-artifact-authoring
-description: Use when creating, iterating on, or validating Gemara security artifacts (threat catalogs, control catalogs, risk catalogs, policies, mapping documents). Also use when the user has security documentation, compliance requirements, threat models, or risk registers that could be structured as Gemara artifacts.
+description: Use when creating, iterating on, or validating Gemara security artifacts (threat catalogs, control catalogs). Also use when the user has security documentation, threat models, or attack scenarios that could be structured as Layer 2 Gemara artifacts. For policies, risk catalogs, or mapping documents, use the dedicated gemara-policy, gemara-risk-catalog, or gemara-mapping-document skills instead.
 ---
 
 # Gemara Artifact Authoring
 
-Guide users through creating schema-valid Gemara security artifacts. Triage what to build, check prerequisites, then walk through the appropriate wizard.
+Guide users through creating schema-valid Gemara Layer 2 security artifacts. Triage what to build, check prerequisites, then walk through the appropriate wizard.
 
 ## Tools and Resources
 
@@ -43,9 +43,9 @@ If the user provides raw documentation, pasted YAML, or file references:
   - Threats, attack scenarios, adversary techniques → ThreatCatalog
   - Security controls, safeguards, countermeasures → ControlCatalog
   - Compliance requirements, standards, regulations → GuidanceCatalog
-  - Risk registers, risk assessments, impact analyses → RiskCatalog
-  - Organizational policies, scope definitions, enforcement rules → Policy
-  - Cross-references between two artifact sets → MappingDocument
+  - Risk registers, risk assessments, impact analyses → use the `gemara-risk-catalog` skill
+  - Organizational policies, scope definitions, enforcement rules → use the `gemara-policy` skill
+  - Cross-references between two artifact sets → use the `gemara-mapping-document` skill
 
 ### Step 3: Recommend based on layer dependencies
 
@@ -60,10 +60,10 @@ Layer 3: RiskCatalog → Policy ← MappingDocument
 Recommendation priority:
 1. No Layer 2 artifacts → recommend ThreatCatalog
 2. ThreatCatalog exists, no ControlCatalog → recommend ControlCatalog
-3. Both Layer 2 exist, no Layer 3 → recommend RiskCatalog or Policy based on user context
-4. Two or more artifacts exist → MappingDocument is an option
+3. Both Layer 2 exist, no Layer 3 → recommend the `gemara-risk-catalog` or `gemara-policy` skill based on user context
+4. Two or more artifacts exist → recommend the `gemara-mapping-document` skill
 
-Present findings and recommendation, then ask which artifact to create.
+Present findings and recommendation, then ask which artifact to create. If the user chooses a Layer 3 artifact or MappingDocument, direct them to the corresponding standalone skill.
 
 ## Prerequisite Check
 
@@ -73,9 +73,6 @@ Before starting a wizard, check prerequisites. If missing, warn the user and off
 |--------------|---------------|
 | ThreatCatalog | None |
 | ControlCatalog | ThreatCatalog (for threat mappings) |
-| RiskCatalog | ThreatCatalog (for threat linkages) |
-| Policy | ControlCatalog (for imports), optionally RiskCatalog (for risk dispositions) |
-| MappingDocument | Two existing artifacts to map between |
 
 If prerequisites are missing:
 
@@ -93,9 +90,14 @@ After the user confirms the artifact type, load and follow the corresponding wiz
 |--------------|-------------|----------------|
 | ThreatCatalog | threat-assessment-wizard.md | `#ThreatCatalog`, `#CapabilityCatalog` |
 | ControlCatalog | control-catalog-wizard.md | `#ControlCatalog` |
-| MappingDocument | mapping-document-wizard.md | `#MappingDocument` |
-| Policy | policy-wizard.md | `#Policy` |
-| RiskCatalog | risk-catalog-wizard.md | `#RiskCatalog` |
+
+For other artifact types, direct the user to the standalone skill:
+
+| Artifact Type | Skill |
+|--------------|-------|
+| MappingDocument | `gemara-mapping-document` |
+| Policy | `gemara-policy` |
+| RiskCatalog | `gemara-risk-catalog` |
 
 Follow the wizard step-by-step. Do not skip steps or present the artifact as complete until it passes final validation with `validate_gemara_artifact`.
 

@@ -1,18 +1,63 @@
-# Policy Wizard
+---
+name: gemara-policy
+description: Use when creating a Gemara Policy (Layer 3) that imports control catalogs, defines scope, contacts, risk dispositions, and adherence requirements. Requires a ControlCatalog for imports; optionally a RiskCatalog for risk dispositions.
+---
 
-You are a **policy wizard** — a security engineering assistant that guides users step-by-step through creating a Gemara-compatible **Policy (Layer 3)** for a component using a structured ID prefix.
+# Policy Authoring
+
+Guide users through creating a schema-valid Gemara `#Policy` artifact.
+
+## Tools and Resources
+
+| Tool / Resource | Purpose |
+|----------------|---------|
+| `validate_gemara_artifact` | Validate YAML against a Gemara CUE schema definition |
+| `migrate_gemara_artifact` | Migrate v0 artifacts to v1 schema |
+| `gemara://lexicon` | Term definitions for the Gemara security model |
+| `gemara://schema/definitions` | CUE schema definitions for all artifact types |
+
+## Prerequisite Check
+
+Before starting the authoring flow, check for prerequisite artifacts.
+
+### Step 1: Scan the repo
+
+Search for `.yaml` and `.yml` files containing a `metadata.type` field with a recognized Gemara artifact type. Build an inventory table:
+
+| Layer | Artifact Type | Found | File |
+|-------|--------------|-------|------|
+| 1 | GuidanceCatalog | | |
+| 2 | ControlCatalog | | |
+| 3 | RiskCatalog | | |
+| 3 | Policy | | |
+
+### Step 2: Check prerequisites
+
+A Policy imports **Control Catalogs** (Layer 2) and optionally references **Risk Catalogs** (Layer 3) and **Guidance Catalogs** (Layer 1).
+
+- **ControlCatalog** is required for `imports.catalogs`. If none is found:
+
+  > "A Policy typically imports a Control Catalog (Layer 2). No Control Catalog was found in this repo. You can proceed if you have an external reference (e.g., a URL to a published catalog), or we can build the prerequisite first. What would you like to do?"
+  >
+  > 1. Build a Control Catalog first
+  > 2. Proceed with an external reference
+  > 3. Choose a different artifact type
+
+- **RiskCatalog** is optional (for risk dispositions). If the user wants risk dispositions but none is found, note that one can be created later.
+
+### Step 3: Proceed to authoring
+
+Once a ControlCatalog source is confirmed, proceed to the authoring flow below.
+
+---
+
+## Authoring Flow
 
 Before beginning, read the `gemara://lexicon` and `gemara://schema/definitions` resources for terminology and schema awareness.
 
 You suggest structure, propose mappings, and draft content — but every contact, scope decision, import, risk disposition, and adherence requirement requires explicit user approval before inclusion. The user owns the artifact; you are the guide.
 
-## Available Tools
-
-| Tool | Purpose | When to Use |
-|------|---------|-------------|
-| `validate_gemara_artifact` | Validate YAML against a Gemara CUE schema definition | **Step 1:** identify unknown artifact types by validating against `#Policy`, `#ControlCatalog`, `#RiskCatalog`, and `#GuidanceCatalog`. **Step 9:** validate the final assembled artifact against `#Policy`. **Ad-hoc:** any time the user asks "is this valid?" or you need to verify partial YAML. |
-
-## Outline
+### Outline
 
 Goal: Produce a valid Gemara `#Policy` YAML artifact through interactive, user-approved steps — covering metadata, contacts, scope, imports (control catalogs, guidance, and other policies), implementation plan, risk dispositions, adherence requirements, and schema validation.
 
@@ -46,7 +91,7 @@ Execution steps:
    metadata:
      id: {ID_PREFIX}
      type: Policy
-     gemara-version: "1.0.0-rc.0"
+     gemara-version: "v1.3.0"
      description: {from user}
      version: 1.0.0
      author:
@@ -391,7 +436,7 @@ Procedure:
 ## Policy Constraints
 
 - All `{ID_PREFIX}` values must match `^[A-Z0-9.-]+$`. If the provided prefix doesn't match, stop and ask for a corrected ID.
-- `metadata.gemara-version` must exactly match the version string from this wizard session. Do not abbreviate or normalize.
+- `metadata.gemara-version` must exactly match the version string from this skill session. Do not abbreviate or normalize.
 - Never emit YAML comment lines (`# ...`) unless the user explicitly requests commented YAML.
 - Do not generate or suggest shell commands other than the `cue vet` command in step 9.
 - If the user provides a mapping you cannot verify (e.g., a control ID you don't recognize), include it but flag it: "Unverified — confirm this ID exists in the referenced catalog."

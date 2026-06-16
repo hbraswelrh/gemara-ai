@@ -1,6 +1,58 @@
-# Mapping Document Wizard
+---
+name: gemara-mapping-document
+description: Use when creating a Gemara Mapping Document that connects two existing security artifacts (e.g., mapping controls to threats, capabilities to guidelines). Requires two source artifacts to map between.
+---
 
-You are a **mapping document wizard** — a security engineering assistant that guides users step-by-step through creating a Gemara-compatible **Mapping Document** for a component using a structured ID prefix.
+# Mapping Document Authoring
+
+Guide users through creating a schema-valid Gemara `#MappingDocument` artifact that connects two existing security artifacts.
+
+## Tools and Resources
+
+| Tool / Resource | Purpose |
+|----------------|---------|
+| `validate_gemara_artifact` | Validate YAML against a Gemara CUE schema definition |
+| `migrate_gemara_artifact` | Migrate v0 artifacts to v1 schema |
+| `gemara://lexicon` | Term definitions for the Gemara security model |
+| `gemara://schema/definitions` | CUE schema definitions for all artifact types |
+
+## Prerequisite Check
+
+Before starting the authoring flow, check that the user has two artifacts to map between.
+
+### Step 1: Scan the repo
+
+Search for `.yaml` and `.yml` files containing a `metadata.type` field with a recognized Gemara artifact type. Build an inventory table:
+
+| Layer | Artifact Type | Found | File |
+|-------|--------------|-------|------|
+| 1 | GuidanceCatalog | | |
+| 2 | ThreatCatalog | | |
+| 2 | ControlCatalog | | |
+| 2 | CapabilityCatalog | | |
+| 3 | RiskCatalog | | |
+| 3 | Policy | | |
+| 3 | MappingDocument | | |
+
+### Step 2: Check prerequisites
+
+A MappingDocument requires **two existing artifacts** to map between (source and target). These can be Gemara artifacts from the repo, external references (e.g., NIST 800-53, MITRE ATT&CK), or artifacts provided by the user.
+
+If fewer than two Gemara artifacts are found in the repo:
+
+> "A Mapping Document connects two artifacts. I found [count] Gemara artifact(s) in this repo. You can proceed if you have external references or can provide artifacts by URL or pasted content. What would you like to do?"
+>
+> 1. Provide artifacts by URL, file path, or pasted content
+> 2. Build the prerequisite artifacts first (recommend ThreatCatalog or ControlCatalog)
+> 3. Choose a different artifact type
+
+### Step 3: Proceed to authoring
+
+Once two artifacts are confirmed, proceed to the authoring flow below.
+
+---
+
+## Authoring Flow
 
 Before beginning, read the `gemara://lexicon` and `gemara://schema/definitions` resources for terminology and schema awareness.
 
@@ -8,13 +60,7 @@ You suggest structure, propose mappings, and draft content — but every mapping
 
 > **Note:** The `#MappingDocument` schema is currently marked as **experimental** in the Gemara specification. The structure may change in future versions. Validate your artifact against the latest schema before production use.
 
-## Available Tool
-
-| Tool                       | Purpose                                              | When to Use                                                                                                                                        |
-|----------------------------|------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------|
-| `validate_gemara_artifact` | Validate YAML against a Gemara CUE schema definition | Validate the final assembled artifact against `#MappingDocument` and any time the user asks "is this valid?" or you need to verify partial YAML. |
-
-## Outline
+### Outline
 
 Goal: Produce a valid Gemara `#MappingDocument` YAML artifact through interactive, user-approved steps — covering metadata, source and target artifact references, individual entry mappings with relationship types, and schema validation.
 
@@ -58,7 +104,7 @@ Execution steps:
    metadata:
      id: {ID_PREFIX from user}
      type: MappingDocument
-     gemara-version: "v1.0.0"
+     gemara-version: "v1.3.0"
      description: {from user}
      version: 1.0.0
      author:
@@ -213,14 +259,14 @@ After the artifact type is confirmed as a Gemara artifact, check whether it uses
 
 Procedure:
 1. Inspect `metadata.gemara-version` in the artifact.
-2. If the version equals `"v1.0.0"`, the artifact is current — proceed normally.
-3. If the version is older (e.g., `"0.20.0"`, `"0.1.0"`, or any value other than `"v1.0.0"`):
-   - Inform the user: *"This artifact uses gemara-version `{version}`, which is an older schema version. The current version is v1.0.0."*
-   - **If the artifact type is `ThreatCatalog` or `ControlCatalog`:** inform the user that automated migration is available — *"Automated migration to v1.0.0 is available via the **migration** prompt. Would you like to migrate this artifact first, or proceed with the v0 version as-is?"*
+2. If the version equals `"v1.3.0"`, the artifact is current — proceed normally.
+3. If the version is older (e.g., `"v1.0.0"`, `"0.20.0"`, `"0.1.0"`, or any value other than `"v1.3.0"`):
+   - Inform the user: *"This artifact uses gemara-version `{version}`, which is an older schema version. The current version is v1.3.0."*
+   - **If the artifact type is `ThreatCatalog` or `ControlCatalog`:** inform the user that automated migration is available — *"Automated migration to v1.3.0 is available via the **migration** prompt. Would you like to migrate this artifact first, or proceed with the older version as-is?"*
    - **If the artifact type is any other type** (e.g., `GuidanceCatalog`, `CapabilityCatalog`, `VectorCatalog`): warn that automated migration is not yet available — *"Automated migration is not currently available for {type} artifacts. You can still use this artifact as-is in the mapping document."*
    - **If the user chooses to migrate:** direct them to use the `migration` prompt separately with this artifact, then return to the mapping document wizard with the migrated output. Do not attempt to run the migration inline.
    - **If the user declines migration or migration is unavailable:** proceed with the v0 artifact. Record its actual `gemara-version` value in the `mapping-references` entry's `version` field.
-4. Regardless of whether the source or target artifacts are v0 or v1, the mapping document's own `metadata.gemara-version` is always `"v1.0.0"`.
+4. Regardless of whether the source or target artifacts are v0 or v1, the mapping document's own `metadata.gemara-version` is always `"v1.3.0"`.
 
 ## Mapping Document Constraints
 
@@ -231,5 +277,5 @@ Procedure:
 - The `strength` field, when present, must be an integer between 1 and 10 inclusive.
 - The `confidence-level` field, when present, must be one of: `Undetermined`, `Low`, `Medium`, `High`.
 - The `source-reference` and `target-reference` `reference-id` values must each match an entry in `mapping-references`.
-- The mapping document's `metadata.gemara-version` is always `"v1.0.0"`, regardless of the schema versions of the source or target artifacts. The `mapping-references` entries record each referenced artifact's actual version.
+- The mapping document's `metadata.gemara-version` is always `"v1.3.0"`, regardless of the schema versions of the source or target artifacts. The `mapping-references` entries record each referenced artifact's actual version.
 - Do not generate or suggest shell commands other than the `cue vet` command in step 5.

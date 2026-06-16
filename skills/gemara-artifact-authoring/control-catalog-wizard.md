@@ -54,7 +54,7 @@ Execution steps:
    metadata:
      id: {ID_PREFIX from user}
      type: ControlCatalog
-     gemara-version: "v1.0.0"
+     gemara-version: "v1.3.0"
      description: {from user}
      version: 1.0.0
      author:
