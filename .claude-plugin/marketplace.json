@@ -1,0 +1,41 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "gemara",
+  "description": "Gemara security framework plugins for Claude Code",
+  "owner": {
+    "name": "Gemara Project",
+    "url": "https://github.com/gemaraproj"
+  },
+  "plugins": [
+    {
+      "name": "gemara-ai",
+      "description": "Interactive wizards for creating Gemara threat catalogs, control catalogs, policies, and risk catalogs with schema validation",
+      "author": {
+        "name": "Gemara Project",
+        "url": "https://github.com/gemaraproj"
+      },
+      "category": "security",
+      "source": {
+        "source": "url",
+        "url": "https://github.com/gemaraproj/gemara-ai.git",
+        "ref": "main",
+        "sha": "714b3b09d05043a98219190dc41448eb9699722e"
+      },
+      "homepage": "https://gemara.openssf.org",
+      "license": "Apache-2.0",
+      "version": "0.1.0",
+      "keywords": [
+        "security",
+        "compliance",
+        "gemara",
+        "threat-modeling",
+        "control-catalog",
+        "policy",
+        "risk",
+        "mcp",
+        "artifact-authoring",
+        "cue"
+      ]
+    }
+  ]
+}
