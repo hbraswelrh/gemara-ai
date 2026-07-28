@@ -1,0 +1,20 @@
+{
+  "mcpServers": {
+    "gemara-mcp": {
+      "command": "podman",
+      "args": [
+        "run", "--rm", "-i",
+        "ghcr.io/gemaraproj/gemara-mcp@sha256:be39e5758f742145b6ee645257f444c72644b0a54dabea2a96ec27756ecad743",
+        "serve"
+      ]
+    },
+    "gemara-mcp-advisory": {
+      "command": "podman",
+      "args": [
+        "run", "--rm", "-i",
+        "ghcr.io/gemaraproj/gemara-mcp@sha256:be39e5758f742145b6ee645257f444c72644b0a54dabea2a96ec27756ecad743",
+        "serve", "--mode", "advisory"
+      ]
+    }
+  }
+}
