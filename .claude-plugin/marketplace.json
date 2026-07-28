@@ -19,7 +19,7 @@
         "source": "url",
         "url": "https://github.com/gemaraproj/gemara-ai.git",
         "ref": "main",
-        "sha": "714b3b09d05043a98219190dc41448eb9699722e"
+        "sha": "f7ce3ec8d639544324de6c0c900a1d18ea0b5120"
       },
       "homepage": "https://gemara.openssf.org",
       "license": "Apache-2.0",
